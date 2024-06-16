@@ -31,7 +31,7 @@ let upgs = {
             if (game.grass >= this.cost) {
                 game.grass -= this.cost;
                 this.cost = Math.floor(this.cost * this.costScaling);
-                game.msPerCut += 1;
+                game.msPerCut *= 0.9;
             }
         },
     },
