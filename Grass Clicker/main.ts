@@ -6,16 +6,25 @@ interface Upgrade {
   cost: number;
   costScaling: number;
   name: string;
+  currency: string;
 
-  buy(game: { grass: number; grassMulti: number; msPerCut: number }): void;
+  buy(game: {
+    grass: number;
+    grassMulti: number;
+    pp: number;
+    xp: number;
+    xpMulti: number;
+  }): void;
 }
 
 // game data
 let game = {
   grass: 0,
   grassMulti: 1,
-  msPerCut: 100,
   xp: 0,
+  xpMulti: 1,
+  levelReq: 30,
+  level: 0,
   pp: 0,
 };
 
@@ -25,6 +34,7 @@ let upgs: { [key: string]: Upgrade } = {
     cost: 15,
     costScaling: 1.2,
     name: "Grass Value I",
+    currency: "Grass",
 
     buy: function (game: { grass: number; grassMulti: number }) {
       if (game.grass >= this.cost) {
@@ -35,16 +45,17 @@ let upgs: { [key: string]: Upgrade } = {
     },
   },
 
-  CS_1: {
+  XP_1: {
     cost: 100,
     costScaling: 1.1,
-    name: "Cutting Speed I",
+    name: "XP I",
+    currency: "Grass",
 
-    buy: function (game: { grass: number; msPerCut: number }) {
+    buy: function (game: { grass: number; xpMulti: number }) {
       if (game.grass >= this.cost) {
         game.grass -= this.cost;
         this.cost = Math.floor(this.cost * this.costScaling);
-        game.msPerCut *= 0.9;
+        game.xpMulti += 1;
       }
     },
   },
@@ -53,10 +64,16 @@ let upgs: { [key: string]: Upgrade } = {
 // self-explanatory
 function cut() {
   game.grass += 1 * game.grassMulti;
-  game.xp += 1;
+  game.xp += 1 * game.xpMulti;
+  if (game.xp >= game.levelReq) {
+    game.level += 1;
+    game.xp -= game.levelReq;
+    game.levelReq = Math.floor(game.levelReq * 1.2);
+  }
   console.log(`Grass: ${game.grass}`);
   if (grassDisplay) grassDisplay.textContent = `${game.grass} Grass`;
-  if (xpDisplay) xpDisplay.textContent = `${game.xp} XP`;
+  if (xpDisplay)
+    xpDisplay.textContent = `Level ${game.level} (${game.xp}/${game.levelReq})`;
 }
 
 // QoL Buy function
@@ -77,7 +94,7 @@ function buy(upg: Upgrade, id: string) {
   }
 }
 
-// Increment grass every second
+// Function to reset the interval with the updated msPerCut
 setInterval(function () {
   cut();
-}, game.msPerCut);
+}, 1000);
