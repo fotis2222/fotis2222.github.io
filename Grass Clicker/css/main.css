@@ -2,12 +2,19 @@
   font-size: 150px;
 }
 
+#xpDisplay {
+  font-size: 50px;
+}
+
 button {
   font-size: 50px;
 }
 
 body {
-  font-family: "Courier New";
   background-color: darkgreen;
   color: white;
+}
+
+* {
+  font-family: "Courier New";
 }
