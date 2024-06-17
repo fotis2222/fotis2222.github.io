@@ -1,5 +1,5 @@
 :root {
-  --bg-green: rgb(0, 50, 0);
+  --bg-green: linear-gradient(to bottom right, green, blue);
 }
 
 #grassDisplay {
@@ -14,16 +14,18 @@
   font-size: 50px;
 }
 
+body {
+  background-image: var(--bg-green);
+  color: white;
+  font-family: Firacode Nerd Font;
+}
+
 button {
   font-size: 50px;
   border-radius: 20px;
+  font-family: Helvetica;
 }
 
-body {
-  background-color: var(--bg-green);
-  color: white;
-}
-
-* {
-  font-family: Courier New;
+#presBtn {
+  background-color: aquamarine;
 }

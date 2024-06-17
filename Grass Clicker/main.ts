@@ -153,7 +153,7 @@ function updatePP() {
   console.log("updated");
   if (prestigeButton) {
     const prestigePoints = Math.floor(9 * Math.pow(1.4, game.level / 10) * Math.pow(1.15, Math.log10(game.grass + 1))); // Adding 1 to avoid log10(0)
-    prestigeButton.innerHTML = `Prestige<br>Reset everything up to this point for PP<br>You will earn ${prestigePoints} PP`;
+    prestigeButton.innerHTML = `Prestige<br>Reset everything* up to this point for PP<br>You will earn ${prestigePoints} PP`;
   }
 }
 
