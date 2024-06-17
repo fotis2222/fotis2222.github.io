@@ -2,6 +2,7 @@
 const grassDisplay = document.getElementById("grassDisplay");
 const xpDisplay = document.getElementById("xpDisplay");
 const prestigeButton = document.getElementById("presBtn");
+const ppDisplay = document.getElementById("PPDisp");
 // game data
 let game = {
     grass: 0,
@@ -11,6 +12,7 @@ let game = {
     levelReq: 30,
     level: 0,
     pp: 0,
+    ppGrassMulti: 1,
 };
 // every upgrade in the game so far with its info
 let upgs = {
@@ -40,10 +42,23 @@ let upgs = {
             }
         },
     },
+    GV_2: {
+        cost: 10,
+        costScaling: 1.2,
+        name: "Grass Value II",
+        currency: "PP",
+        buy: function (game) {
+            if (game.pp >= this.cost) {
+                game.pp -= this.cost;
+                this.cost = Math.floor(this.cost * this.costScaling);
+                game.ppGrassMulti += 1;
+            }
+        },
+    },
 };
 // self-explanatory
 function cut() {
-    game.grass += game.grassMulti;
+    game.grass += game.grassMulti * game.ppGrassMulti;
     game.xp += game.xpMulti;
     if (game.xp >= game.levelReq) {
         game.level += 1;
@@ -63,14 +78,17 @@ function buy(upg, id) {
     upg.buy(game);
     const btn = document.getElementById(id);
     if (btn) {
-        console.log(`Updating button text to: ${upg.name}<br>Cost: ${upg.cost} Grass`);
-        btn.innerHTML = `${upg.name}<br>Cost: ${upg.cost} Grass`;
+        console.log(`Updating button text to: ${upg.name}<br>Cost: ${upg.cost} ${upg.currency}`);
+        btn.innerHTML = `${upg.name}<br>Cost: ${upg.cost} ${upg.currency}`;
     }
     else {
         console.log("Button element not found");
     }
     if (grassDisplay) {
         grassDisplay.textContent = `${game.grass} Grass`;
+    }
+    if (ppDisplay) {
+        ppDisplay.textContent = `${game.pp} PP`;
     }
     updatePP(); // Ensure PP is updated after buying an upgrade
 }
@@ -98,6 +116,9 @@ function prestige() {
         upgs.XP_1.cost = 100;
         resetUpgradeButtons();
         updatePP(); // Ensure PP is updated after prestige
+        if (ppDisplay) {
+            ppDisplay.textContent = `${game.pp} PP`;
+        }
     }
 }
 function updatePP() {
@@ -109,5 +130,6 @@ function updatePP() {
 }
 setInterval(function () {
     cut();
+    updatePP();
 }, 1000);
 //# sourceMappingURL=main.js.map

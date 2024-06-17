@@ -1,6 +1,7 @@
 const grassDisplay = document.getElementById("grassDisplay");
 const xpDisplay = document.getElementById("xpDisplay");
 const prestigeButton = document.getElementById("presBtn");
+const ppDisplay = document.getElementById("PPDisp");
 
 // upgrade skeleton
 interface Upgrade {
@@ -15,6 +16,7 @@ interface Upgrade {
     pp: number;
     xp: number;
     xpMulti: number;
+    ppGrassMulti: number;
   }): void;
 }
 
@@ -27,6 +29,7 @@ let game = {
   levelReq: 30,
   level: 0,
   pp: 0,
+  ppGrassMulti: 1,
 };
 
 // every upgrade in the game so far with its info
@@ -60,11 +63,26 @@ let upgs: { [key: string]: Upgrade } = {
       }
     },
   },
+
+  GV_2: {
+    cost: 10,
+    costScaling: 1.2,
+    name: "Grass Value II",
+    currency: "PP",
+
+    buy: function (game: { pp: number; ppGrassMulti: number }) {
+      if (game.pp >= this.cost) {
+        game.pp -= this.cost;
+        this.cost = Math.floor(this.cost * this.costScaling);
+        game.ppGrassMulti += 1;
+      }
+    },
+  },
 };
 
 // self-explanatory
 function cut() {
-  game.grass += game.grassMulti;
+  game.grass += game.grassMulti * game.ppGrassMulti;
   game.xp += game.xpMulti;
   if (game.xp >= game.levelReq) {
     game.level += 1;
@@ -85,14 +103,17 @@ function buy(upg: Upgrade, id: string) {
   const btn = document.getElementById(id);
   if (btn) {
     console.log(
-      `Updating button text to: ${upg.name}<br>Cost: ${upg.cost} Grass`
+      `Updating button text to: ${upg.name}<br>Cost: ${upg.cost} ${upg.currency}`
     );
-    btn.innerHTML = `${upg.name}<br>Cost: ${upg.cost} Grass`;
+    btn.innerHTML = `${upg.name}<br>Cost: ${upg.cost} ${upg.currency}`;
   } else {
     console.log("Button element not found");
   }
   if (grassDisplay) {
     grassDisplay.textContent = `${game.grass} Grass`;
+  }
+  if (ppDisplay) {
+    ppDisplay.textContent = `${game.pp} PP`
   }
   updatePP();  // Ensure PP is updated after buying an upgrade
 }
@@ -122,6 +143,9 @@ function prestige() {
     upgs.XP_1.cost = 100;
     resetUpgradeButtons();
     updatePP();  // Ensure PP is updated after prestige
+    if (ppDisplay) {
+      ppDisplay.textContent = `${game.pp} PP`
+    }
   }
 }
 
@@ -135,4 +159,5 @@ function updatePP() {
 
 setInterval(function () {
   cut();
+  updatePP();
 }, 1000);

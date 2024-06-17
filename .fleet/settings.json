@@ -1,3 +1,4 @@
 {
     "editor.guides": [],
+    "nodejs.typescript.rebuildOnChanges": true
 }

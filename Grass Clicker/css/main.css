@@ -2,6 +2,10 @@
   font-size: 150px;
 }
 
+#PPDisp {
+  font-size: 150px;
+}
+
 #xpDisplay {
   font-size: 50px;
 }
@@ -16,5 +20,5 @@ body {
 }
 
 * {
-  font-family: "Courier New";
+  font-family: Courier New;
 }
