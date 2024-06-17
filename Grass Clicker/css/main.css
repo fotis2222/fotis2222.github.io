@@ -1,3 +1,7 @@
+:root {
+  --bg-green: rgb(0, 50, 0);
+}
+
 #grassDisplay {
   font-size: 150px;
 }
@@ -12,10 +16,11 @@
 
 button {
   font-size: 50px;
+  border-radius: 20px;
 }
 
 body {
-  background-color: darkgreen;
+  background-color: var(--bg-green);
   color: white;
 }
 
