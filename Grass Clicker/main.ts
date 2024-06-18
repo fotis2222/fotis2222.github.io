@@ -97,6 +97,84 @@ let upgs: { [key: string]: Upgrade } = {
   },
 };
 
+// Reattach methods after loading upgrades from storage
+function reattachMethods() {
+  for (const key in upgs) {
+    const upg = upgs[key];
+    if (upg.name === "Grass Value I") {
+      upg.buy = function (game: { grass: number; grassMulti: number }) {
+        if (game.grass >= this.cost) {
+          game.grass -= this.cost;
+          this.cost = Math.floor(this.cost * this.costScaling);
+          game.grassMulti += 1;
+        }
+      };
+    } else if (upg.name === "XP I") {
+      upg.buy = function (game: { grass: number; xpMulti: number }) {
+        if (game.grass >= this.cost) {
+          game.grass -= this.cost;
+          this.cost = Math.floor(this.cost * this.costScaling);
+          game.xpMulti += 1;
+        }
+      };
+    } else if (upg.name === "Grass Value II") {
+      upg.buy = function (game: { pp: number; ppGrassMulti: number }) {
+        if (game.pp >= this.cost) {
+          game.pp -= this.cost;
+          this.cost = Math.floor(this.cost * this.costScaling);
+          game.ppGrassMulti += 1;
+        }
+      };
+    } else if (upg.name === "XP II") {
+      upg.buy = function (game: { pp: number; ppXPMulti: number }) {
+        if (game.pp >= this.cost) {
+          game.pp -= this.cost;
+          this.cost = Math.floor(this.cost * this.costScaling);
+          game.ppXPMulti += 1;
+        }
+      };
+    }
+  }
+}
+
+// Save and Load functions
+function saveGame() {
+  localStorage.setItem('gameState', JSON.stringify(game));
+  localStorage.setItem('upgrades', JSON.stringify(upgs));
+  console.log('Game saved');
+}
+
+function loadGame() {
+  const savedGame = localStorage.getItem('gameState');
+  const savedUpgs = localStorage.getItem('upgrades');
+
+  if (savedGame) {
+    game = JSON.parse(savedGame);
+  }
+
+  if (savedUpgs) {
+    upgs = JSON.parse(savedUpgs);
+    reattachMethods(); // Reattach methods to upgrades
+  }
+
+  resetUpgradeButtons(); // Ensure buttons are updated with loaded data
+  updateDisplays(); // Update UI with loaded data
+  console.log('Game loaded');
+}
+
+function updateDisplays() {
+  if (grassDisplay) {
+    grassDisplay.textContent = `${game.grass} Grass`;
+  }
+  if (xpDisplay) {
+    xpDisplay.textContent = `Level ${game.level} (${game.xp}/${game.levelReq})`;
+  }
+  if (ppDisplay) {
+    ppDisplay.textContent = `${game.pp} PP`;
+  }
+  updatePP();
+}
+
 // self-explanatory
 function cut() {
   game.grass += game.grassMulti * game.ppGrassMulti;
@@ -110,7 +188,8 @@ function cut() {
   if (grassDisplay) grassDisplay.textContent = `${game.grass} Grass`;
   if (xpDisplay)
     xpDisplay.textContent = `Level ${game.level} (${game.xp}/${game.levelReq})`;
-  updatePP();  // Ensure PP is updated after cutting grass
+  updatePP();
+  saveGame(); // Save game after cutting grass
 }
 
 // QoL Buy function
@@ -130,9 +209,10 @@ function buy(upg: Upgrade, id: string) {
     grassDisplay.textContent = `${game.grass} Grass`;
   }
   if (ppDisplay) {
-    ppDisplay.textContent = `${game.pp} PP`
+    ppDisplay.textContent = `${game.pp} PP`;
   }
-  updatePP();  // Ensure PP is updated after buying an upgrade
+  updatePP();
+  saveGame(); // Save game after buying an upgrade
 }
 
 // Reset upgrade buttons
@@ -159,10 +239,11 @@ function prestige() {
     upgs.GV_1.cost = 15;
     upgs.XP_1.cost = 100;
     resetUpgradeButtons();
-    updatePP();  // Ensure PP is updated after prestige
+    updatePP();
     if (ppDisplay) {
-      ppDisplay.textContent = `${game.pp} PP`
+      ppDisplay.textContent = `${game.pp} PP`;
     }
+    saveGame(); // Save game after prestige
   }
 }
 
@@ -174,7 +255,15 @@ function updatePP() {
   }
 }
 
+// Load game on start
+window.onload = function () {
+  loadGame();
+  resetUpgradeButtons();
+  updateDisplays();
+};
+
 setInterval(function () {
   cut();
   updatePP();
+  saveGame(); // Save game periodically
 }, 1000);
