@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap');
 
 :root {
-  --bg-green: linear-gradient(to bottom right, green, blue);
+  --bg-green: linear-gradient(to bottom, green, blue, purple);
 }
 
 #grassDisplay {

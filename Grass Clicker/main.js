@@ -13,6 +13,7 @@ let game = {
     level: 0,
     pp: 0,
     ppGrassMulti: 1,
+    ppXPMulti: 1,
 };
 // every upgrade in the game so far with its info
 let upgs = {
@@ -55,11 +56,24 @@ let upgs = {
             }
         },
     },
+    XP_2: {
+        cost: 20,
+        costScaling: 1.1,
+        name: "XP II",
+        currency: "PP",
+        buy: function (game) {
+            if (game.pp >= this.cost) {
+                game.pp -= this.cost;
+                this.cost = Math.floor(this.cost * this.costScaling);
+                game.ppXPMulti += 1;
+            }
+        },
+    },
 };
 // self-explanatory
 function cut() {
     game.grass += game.grassMulti * game.ppGrassMulti;
-    game.xp += game.xpMulti;
+    game.xp += game.xpMulti * game.ppXPMulti;
     if (game.xp >= game.levelReq) {
         game.level += 1;
         game.xp -= game.levelReq;
@@ -98,7 +112,7 @@ function resetUpgradeButtons() {
         const upg = upgs[key];
         const btn = document.getElementById(key);
         if (btn) {
-            btn.innerHTML = `${upg.name}<br>Cost: ${upg.cost} Grass`;
+            btn.innerHTML = `${upg.name}<br>Cost: ${upg.cost} ${upg.currency}`;
         }
     }
 }
